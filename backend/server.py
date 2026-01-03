@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import backend.security as security
+import os
 
 app = FastAPI()
 sessions: dict[str, Session] = {}
@@ -15,7 +16,7 @@ sessions: dict[str, Session] = {}
 # Only allow your frontend to make browser requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://phoenix5971-portfolio.vercel.app"],
+    allow_origins=[os.getenv("ALLOWED_ORIGINS")],  # type: ignore
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
