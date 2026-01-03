@@ -15,4 +15,4 @@ packages = ["src", "config", "backend"]
 [tool.vercel]
 framework = "fastapi"
 python = "3.13"
-entrypoint = "backend/server.py"
+entrypoint = "app.py"
