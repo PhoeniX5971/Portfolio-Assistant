@@ -10,8 +10,3 @@ description = "Portfolio Assistant project."
 [tool.setuptools]
 # This tells setuptools to include the top-level folders as packages
 packages = ["src", "config", "backend"]
-
-[tool.vercel]
-framework = "fastapi"
-python = "3.13"
-entrypoint = "backend/server.py" # path to your file with `app = FastAPI()`
