@@ -219,7 +219,3 @@ data/
 sessions/
 logs/
 *.log
-
-**/security.py
-
-**/*.pem
