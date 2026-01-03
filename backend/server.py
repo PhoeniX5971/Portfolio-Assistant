@@ -78,7 +78,7 @@ async def chat_endpoint_rest(
         }
 
 
-@app.post("/api/chat")
+@app.post("/")
 async def chat_endpoint(
     request: ChatRequest,
     request_obj: Request,
