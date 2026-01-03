@@ -1,6 +1,5 @@
 import jwt
 
-# COPY CONTENT OF security/public.pem HERE
 PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz8ao5b1fwvfvo2y/AlqM
 G9Kkmqp+QM8xASCYuSDmv8c5XPhIhtdm9DJEyvqtedlvC4JZowzd+Y0DaQkjHlE5
@@ -12,11 +11,17 @@ BwIDAQAB
 -----END PUBLIC KEY-----"""
 
 
+# You don’t need to import InvalidTokenError separately, just catch jwt.PyJWTError
 def verify_token(token: str) -> bool:
     try:
-        # Verify the signature and issuer
-        jwt.decode(token, PUBLIC_KEY, algorithms=["RS256"], issuer="next-app")
+        jwt.decode(
+            token,
+            PUBLIC_KEY,
+            algorithms=["RS256"],
+            issuer="next-app",
+            options={"verify_aud": False},  # only if you don’t have audience
+        )
         return True
-    except Exception as e:
+    except jwt.PyJWTError as e:  # catch all decode/validation errors
         print(f"Auth Error: {e}")
         return False
