@@ -214,3 +214,7 @@ sonar/
 
 # Custom
 framework/
+
+sessions/
+logs/
+*.log

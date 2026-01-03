@@ -25,7 +25,7 @@ async def chat_endpoint_rest(
     # 1. Session Management
     session_id = x_session_id or str(uuid.uuid4())
     if session_id not in sessions:
-        sessions[session_id] = Session()
+        sessions[session_id] = Session(x_session_id)
 
     session = sessions[session_id]
 
@@ -61,7 +61,7 @@ async def chat_endpoint(
 ):
     session_id = x_session_id or str(uuid.uuid4())
     if session_id not in sessions:
-        sessions[session_id] = Session()
+        sessions[session_id] = Session(x_session_id)
     session = sessions[session_id]
 
     # Note: NOT async, so FastAPI runs it in a threadpool
