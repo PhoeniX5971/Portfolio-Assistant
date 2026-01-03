@@ -15,7 +15,7 @@ sessions: dict[str, Session] = {}
 # Only allow your frontend to make browser requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://my-frontend.vercel.app"],
+    allow_origins=["https://phoenix5971-portfolio.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
