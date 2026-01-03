@@ -215,6 +215,11 @@ sonar/
 # Custom
 framework/
 
+data/
 sessions/
 logs/
 *.log
+
+**/security.py
+
+**/*.pem

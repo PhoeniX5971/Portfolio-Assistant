@@ -1,42 +1,65 @@
-from fastapi import FastAPI, Header
+from fastapi import FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
 import time
 import uuid
 from src.llm.agents import Session
-
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 import json
+import backend.security as security
 
 app = FastAPI()
 sessions: dict[str, Session] = {}
+
+# Only allow your frontend to make browser requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://my-frontend.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class ChatRequest(BaseModel):
     message: str
 
 
+def verify_auth(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+
+    token = auth_header.split(" ")[1]
+    if not security.verify_token(token):
+        raise HTTPException(status_code=401, detail="Invalid Authentication Token")
+
+
 @app.post("/api/chat-rest")
 async def chat_endpoint_rest(
-    request: ChatRequest, x_session_id: Optional[str] = Header(None)
+    request: ChatRequest,
+    request_obj: Request,
+    x_session_id: Optional[str] = Header(None),
 ):
+    # 1. Verify JWT
+    verify_auth(request_obj)
+
     start_time = time.time()
 
-    # 1. Session Management
+    # 2. Session Management
     session_id = x_session_id or str(uuid.uuid4())
     if session_id not in sessions:
-        sessions[session_id] = Session(x_session_id)
+        sessions[session_id] = Session(session_id)
 
     session = sessions[session_id]
 
     try:
-        # 2. Execute the Agent Loop
-        # This returns (message, internal_logs) as we fixed earlier
+        # 3. Execute the Agent Loop (synchronous)
         messages, internal_logs = session.run(request.message)
 
         processing_time = int((time.time() - start_time) * 1000)
 
-        # 3. Return the exact format your TSX expects
         return {
             "success": True,
             "response": messages,
@@ -44,7 +67,7 @@ async def chat_endpoint_rest(
             "metadata": {
                 "session_id": session_id,
                 "processing_time_ms": processing_time,
-                "tokens": 0,  # Replace with actual token count if available
+                "tokens": 0,  # replace with actual token count if available
             },
         }
     except Exception as e:
@@ -57,14 +80,21 @@ async def chat_endpoint_rest(
 
 @app.post("/api/chat")
 async def chat_endpoint(
-    request: ChatRequest, x_session_id: Optional[str] = Header(None)
+    request: ChatRequest,
+    request_obj: Request,
+    x_session_id: Optional[str] = Header(None),
 ):
+    # 1. Verify JWT
+    verify_auth(request_obj)
+
+    # 2. Session Management
     session_id = x_session_id or str(uuid.uuid4())
     if session_id not in sessions:
-        sessions[session_id] = Session(x_session_id)
+        sessions[session_id] = Session(session_id)
+
     session = sessions[session_id]
 
-    # Note: NOT async, so FastAPI runs it in a threadpool
+    # 3. Streaming response generator
     def event_generator():
         try:
             for event in session.run_stream(request.message):
