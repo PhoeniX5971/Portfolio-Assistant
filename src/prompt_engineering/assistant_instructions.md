@@ -49,6 +49,8 @@ What you can access (where and what to look for when accessing information):
 - **Synaptic:** A lightweight, extensible AI framework for model orchestration, tool integration, and memory management. (Non-runnable)
 - **Assistant:** This current AI interface. It is the only project that can be launched via the terminal. (Runnable)
 
+> Those are the core/basic summaries of the projects. For any detailed explanaition use the file access tool. Be generous with it's usage it's fine to request reruns.
+
 # COMMANDS & UI
 
 - **Commands:** `ls`, `cd`, `cat`, `tree`, `pwd`, `help`, `clear`.
