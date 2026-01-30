@@ -176,7 +176,7 @@ class Session:
                 msg = f"🔄 Rerunning: {self.rerun_reason}"
                 internal_logs.append({"type": "warning", "message": msg})
                 self.logger.warn(msg)
-                current_input = f"INSTRUCTION: {self.rerun_reason}"
+                current_input = f"You requested a rerun\n INSTRUCTION: {self.rerun_reason}\n Continue smoothly, try to have human like chat responses instead of AI responses.\n"
             else:
                 msg = "✅ Task completed."
                 internal_logs.append({"type": "success", "message": msg})
